@@ -25,9 +25,25 @@ def get_all_planets():
 
     return jsonify(planet_response)
 
-@solar_systems_bp.route("/<planet_id>", methods = ["GET"])
+@solar_systems_bp.route("/<planet_id>", methods = ["GET", "PUT", "DELETE"])
 def get_planet(planet_id):
     planet = Planet.query.get(planet_id)
-    
-    return jsonify({"id": planet.id, "name": planet.name, "description": planet.description, "size": planet.size})
+    if request.method == "GET":
+        return jsonify({"id": planet.id, "name": planet.name, "description": planet.description, "size": planet.size})
+    elif request.method == "PUT":
+        form_body = request.get_json()
+
+        planet.name = form_body["name"]
+        planet.description = form_body["description"]
+        planet.size = form_body["size"]
+
+        db.session.commit()
+
+        return make_response(f"{planet.name} has been successfully updated.")
+
+    elif request.method == "DELETE":
+        db.session.delete(planet)
+        db.session.commit()
+        return make_response(f"{planet.name} was successfully deleted.")
+
 
