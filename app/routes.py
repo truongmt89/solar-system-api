@@ -28,6 +28,9 @@ def get_all_planets():
 @solar_systems_bp.route("/<planet_id>", methods = ["GET", "PUT", "DELETE"])
 def get_planet(planet_id):
     planet = Planet.query.get(planet_id)
+    if planet == None:
+        return (f"Planet not found", 404)
+
     if request.method == "GET":
         return jsonify({"id": planet.id, "name": planet.name, "description": planet.description, "size": planet.size})
     elif request.method == "PUT":
